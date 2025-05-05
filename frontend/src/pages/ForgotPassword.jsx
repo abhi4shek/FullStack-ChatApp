@@ -244,7 +244,7 @@ const ForgotPassword = () => {
           )}
           <div className="divider">OR</div>
           <a
-            href="http://localhost:3000/api/auth/google?mode=login"
+            href="https://fullstack-chatapp-lix7.onrender.com/api/auth/google?mode=login"
             className="btn btn-outline w-full rounded-2xl"
           >
             {/* Google SVG Logo */}

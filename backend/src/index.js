@@ -20,13 +20,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  // "http://172.16.2.146:5173",
-];
 app.use(
     cors({
-    origin: allowedOrigins,
+    origin: "https://fullstack-chatapp-lix7.onrender.com",
     credentials: true,
 }));
 
@@ -43,6 +39,6 @@ app.use("/api/messages", messageRouters);
   }
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log("Server running on http://0.0.0.0:" + PORT);
+  console.log("Server running on" + PORT);
   connectDB();
 });

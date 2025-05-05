@@ -154,7 +154,7 @@ const SignUpPage = () => {
 
           <div className="divider">OR</div>
           <a
-            href="http://localhost:3000/api/auth/google?mode=signup"
+            href="https://fullstack-chatapp-lix7.onrender.com/api/auth/google?mode=signup"
             className="btn btn-outline w-full rounded-2xl"
           >
             {/* Google SVG Logo */}
