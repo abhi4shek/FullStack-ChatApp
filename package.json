@@ -1,0 +1,35 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon backend/src/index.js",
+    "start": "node backend/src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@cloudinary/url-gen": "^1.21.0",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.5.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "nodemailer": "^7.0.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "real-time-chat": "file:..",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
