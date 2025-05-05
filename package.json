@@ -5,7 +5,7 @@
   "scripts": {
   "dev": "nodemon backend/src/index.js",
   "start": "node backend/src/index.js",
-  "build": "npm --prefix frontend install && ls frontend/node_modules/@vitejs && npm --prefix frontend run build"
+  "build": "npm --prefix frontend install && ls -la frontend/node_modules/@vitejs/plugin-react && node --version && pwd && npm --prefix frontend run build"
 },
   "keywords": [],
   "author": "",
