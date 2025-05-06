@@ -28,8 +28,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  // "http://172.16.2.146:5173",
+  "https://chatapp-abhi.up.railway.app",
 ];
 app.use(
     cors({

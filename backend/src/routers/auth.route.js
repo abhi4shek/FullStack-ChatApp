@@ -27,11 +27,15 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "http://localhost:5173/login?error=google",
+    failureRedirect: "/login?error=google", // Relative path, will use the correct domain
   }),
   (req, res) => {
-    const token = generateToken(req.user._id, res);
-    res.redirect(`http://localhost:5173/?token=${token}`);
+    generateToken(req.user._id, res);
+    // Redirect to the frontend without the token in the URL
+    const redirectUrl = process.env.NODE_ENV === "production"
+      ? "https://chatapp-abhi.up.railway.app/"
+      : "http://localhost:5173/";
+    res.redirect(redirectUrl);
   }
 );
 router.post("/signup", signup);
