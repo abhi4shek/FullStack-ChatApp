@@ -127,7 +127,7 @@ const LoginPage = () => {
           </form>
           <div className="divider">OR</div>
           <a
-            href="http://localhost:3000/api/auth/google?mode=login"
+            href="https://chatapp-abhi.up.railway.app/api/auth/google?mode=login"
             className="btn btn-outline w-full rounded-2xl flex items-center justify-center gap-2"
           >
             {/* Google SVG Logo */}
