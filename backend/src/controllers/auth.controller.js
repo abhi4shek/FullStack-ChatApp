@@ -48,7 +48,7 @@ export const signup = async (req, res) => {
       profilePic: newUser.profilePic,
     });
   } catch (error) {
-    console.log("Error in signup controller", error.message);
+    ("Error in signup controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -79,7 +79,7 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
     });
   } catch (error) {
-    console.log("Error in login controller", error.message);
+    ("Error in login controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -113,7 +113,7 @@ export const forgotPassword = async (req, res) => {
       message: `Email send to ${email} successfully`,
     });
   } catch (error) {
-    console.log("Error in sending verification otp.", error.message);
+    ("Error in sending verification otp.", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -147,16 +147,16 @@ export const verifyOtp = async (req, res) => {
       email: user.email,
       profilePic: user.profilePic,
     });
-    console.log("returned uder details", res);
+    ("returned uder details", res);
   } catch (error) {
-    console.log("Error in sending verification otp.", error.message);
+    ("Error in sending verification otp.", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const updatePassword = async (req, res) => {
   const { email, newPassword } = req.body;
-  console.log("Received password reset request:", req.body);
+  ("Received password reset request:", req.body);
 
 
   try {
@@ -193,7 +193,7 @@ export const logout = (req, res) => {
     res.cookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    console.log("Error in logout controller", error.message);
+    ("Error in logout controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -216,7 +216,7 @@ export const updateProfile = async (req, res) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.log("Error in update profile:", error.message);
+    ("Error in update profile:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -225,7 +225,7 @@ export const checkAuth = (req, res) => {
   try {
     res.status(200).json(req.user);
   } catch (error) {
-    console.log("Error in checkAuth controller", error.message);
+    ("Error in checkAuth controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
+import { useCallStore } from "./useCallStore";
 
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:3000" : "/";
@@ -134,45 +135,66 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  connectSocket: () => {
-    const { authUser, socket } = get();
+  connectSocket: async () => {
+    const authUser = get().authUser;
+    if (!authUser?._id) {
+      console.log("🔌 Skipping socket connection: authUser not set");
+      return;
+    }
 
-    // Prevent duplicate connection
-    if (!authUser) return;
+    const existingSocket = get().socket;
+    if (existingSocket && existingSocket.connected) {
+      console.log("🔌 Existing socket already connected:", existingSocket.id);
+      return;
+    }
+    if (existingSocket) {
+      console.log(
+        "🔌 Disconnecting stale socket:",
+        existingSocket.id || "unknown"
+      );
+      existingSocket.disconnect();
+      set({ socket: null });
+    }
 
-    // Reuse existing connected socket
-    if (socket && socket.connected) return;
-
-    // Disconnect old socket if it exists
-    if (socket) socket.disconnect();
-
-    const newSocket = io(BASE_URL, {
-      query: {
-        userId: authUser._id,
-      },
+    console.log("🔌 Creating new socket for user:", authUser._id);
+    const socket = io(BASE_URL, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      query: { userId: authUser._id },
+      transports: ["websocket"], // Avoid polling to bypass CSP
     });
 
-    set({ socket: newSocket });
-
-    newSocket.on("connect", () => {
-      console.log("✅ Socket connected:", newSocket.id);
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket.id);
+      set({ socket });
+      useCallStore.getState().setSocket(socket);
+      useCallStore.getState().initializeCallSocket(authUser._id);
+      socket.emit("getOnlineUsers");
     });
 
-    newSocket.on("getOnlineUsers", (userIds) => {
-      set({ onlineUsers: userIds });
+    socket.on("connect_error", (error) => {
+      console.error("❌ Socket connect error:", error.message);
     });
 
-    newSocket.on("disconnect", () => {
-      console.log("🔌 Socket disconnected");
+    socket.on("onlineUsers", (users) => {
+      set({ onlineUsers: users });
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log("🔌 Socket disconnected, reason:", reason);
+      set({ socket: null, onlineUsers: [] });
+      useCallStore.getState().setSocket(null);
     });
   },
 
   disconnectSocket: () => {
     const socket = get().socket;
     if (socket) {
-      socket.off(); // remove all listeners
+      console.log("🔌 Disconnecting socket:", socket.id);
       socket.disconnect();
-      set({ socket: null });
+      set({ socket: null, onlineUsers: [] });
+      useCallStore.getState().setSocket(null);
     }
   },
 }));
