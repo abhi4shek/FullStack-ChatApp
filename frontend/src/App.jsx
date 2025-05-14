@@ -22,28 +22,27 @@ const App = () => {
   const { theme } = useThemeStore();
 
   useEffect(() => {
-    ("🌟 App component mounted, authUser:", authUser?._id, "theme:", theme);
     checkAuth();
+    console.log("🌟 App component mounted, authUser:", authUser?._id, "theme:", theme);
   }, [checkAuth]);
 
   useEffect(() => {
     if (authUser) {
-      ("🔌 Connecting socket for user:", authUser._id);
-      connectSocket();
+      // console.log("🔌 Connecting socket for user:", authUser?._id);
     }
   }, [authUser, connectSocket]);
 
   useEffect(() => {
     const unsubscribe = useCallStore.subscribe((state) => {
-      ("🔄 App: CallStore state:", {
-        isReceivingCall: state.isReceivingCall,
-        isCalling: state.isCalling,
-        isInCall: state.isInCall,
-        caller: state.caller,
-      });
+      // console.log("🔄 App: CallStore state:", {
+      //   isReceivingCall: state.isReceivingCall,
+      //   isCalling: state.isCalling,
+      //   isInCall: state.isInCall,
+      //   caller: state.caller,
+      // });
     });
     return () => {
-      ("🔄 App: Unsubscribing from CallStore");
+      // console.log("🔄 App: Unsubscribing from CallStore");
       unsubscribe();
     };
   }, []);

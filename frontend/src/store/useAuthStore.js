@@ -138,25 +138,25 @@ export const useAuthStore = create((set, get) => ({
   connectSocket: async () => {
     const authUser = get().authUser;
     if (!authUser?._id) {
-      console.log("🔌 Skipping socket connection: authUser not set");
+      // console.log("🔌 Skipping socket connection: authUser not set");
       return;
     }
 
     const existingSocket = get().socket;
     if (existingSocket && existingSocket.connected) {
-      console.log("🔌 Existing socket already connected:", existingSocket.id);
+      // console.log("🔌 Existing socket already connected:", existingSocket.id);
       return;
     }
     if (existingSocket) {
-      console.log(
-        "🔌 Disconnecting stale socket:",
-        existingSocket.id || "unknown"
-      );
+      // console.log(
+      //   "🔌 Disconnecting stale socket:",
+      //   existingSocket.id || "unknown"
+      // );
       existingSocket.disconnect();
       set({ socket: null });
     }
 
-    console.log("🔌 Creating new socket for user:", authUser._id);
+    // console.log("🔌 Creating new socket for user:", authUser._id);
     const socket = io(BASE_URL, {
       reconnection: true,
       reconnectionAttempts: 5,
@@ -174,7 +174,7 @@ export const useAuthStore = create((set, get) => ({
     });
 
     socket.on("connect_error", (error) => {
-      console.error("❌ Socket connect error:", error.message);
+      // console.error("❌ Socket connect error:", error.message);
     });
 
     socket.on("onlineUsers", (users) => {
@@ -191,7 +191,7 @@ export const useAuthStore = create((set, get) => ({
   disconnectSocket: () => {
     const socket = get().socket;
     if (socket) {
-      console.log("🔌 Disconnecting socket:", socket.id);
+      // console.log("🔌 Disconnecting socket:", socket.id);
       socket.disconnect();
       set({ socket: null, onlineUsers: [] });
       useCallStore.getState().setSocket(null);

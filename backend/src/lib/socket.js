@@ -15,7 +15,7 @@ const io = new Server(server, {
 });
 
 export function getReceiverSocketId(userId) {
-  console.log("🔍 Getting socket ID for user:", userId, "->", userSocketMap[userId]);
+  // console.log("🔍 Getting socket ID for user:", userId, "->", userSocketMap[userId]);
   return userSocketMap[userId];
 }
 
@@ -25,7 +25,7 @@ const userCallState = {};
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
 
-  console.log("🔌 New socket connection:", socket.id, "userId:", userId);
+  // console.log("🔌 New socket connection:", socket.id, "userId:", userId);
 
   if (!userId || userId === "undefined") {
     console.warn("🚫 Invalid or missing userId on socket connection");
@@ -39,33 +39,33 @@ io.on("connection", (socket) => {
     userCallState[userId] = "idle";
   }
 
-  console.log("👥 Updated userSocketMap:", Object.keys(userSocketMap));
+  // console.log("👥 Updated userSocketMap:", Object.keys(userSocketMap));
   io.emit("onlineUsers", Object.keys(userSocketMap));
 
   socket.on("getOnlineUsers", () => {
-    console.log("📋 Received getOnlineUsers from:", userId);
+    // console.log("📋 Received getOnlineUsers from:", userId);
     socket.emit("onlineUsers", Object.keys(userSocketMap));
   });
 
   // ---- CALL EVENTS ---- //
   socket.on("call:request", ({ toUserId, callType, fullName, profilePic }) => {
-    console.log("📞 Received call:request from:", socket.userId, "to:", toUserId, "type:", callType, "fullName:", fullName);
+    // console.log("📞 Received call:request from:", socket.userId, "to:", toUserId, "type:", callType, "fullName:", fullName);
     const toSocketId = userSocketMap[toUserId];
 
     if (!toSocketId) {
-      console.log("🚫 Receiver offline:", toUserId);
+      // console.log("🚫 Receiver offline:", toUserId);
       return socket.emit("call:unavailable", { reason: "offline" });
     }
 
     if (userCallState[toUserId] !== "idle" || userCallState[socket.userId] !== "idle") {
-      console.log("🚫 One or both users busy:", socket.userId, toUserId);
+      // console.log("🚫 One or both users busy:", socket.userId, toUserId);
       return socket.emit("call:unavailable", { reason: "busy" });
     }
 
     userCallState[socket.userId] = "ringing";
     userCallState[toUserId] = "ringing";
 
-    console.log("📡 Emitting call:ringing to:", toSocketId, "from:", socket.userId);
+    // console.log("📡 Emitting call:ringing to:", toSocketId, "from:", socket.userId);
     io.to(toSocketId).emit("call:ringing", {
       fromUserId: socket.userId,
       callType,
@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
 
     setTimeout(() => {
       if (userCallState[socket.userId] === "ringing" && userCallState[toUserId] === "ringing") {
-        console.log("⏰ Call timeout for:", socket.userId, toUserId);
+        // console.log("⏰ Call timeout for:", socket.userId, toUserId);
         userCallState[socket.userId] = "idle";
         userCallState[toUserId] = "idle";
         socket.emit("call:ended", { byUserId: toUserId, reason: "timeout" });
@@ -85,11 +85,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("call:accept", ({ fromUserId }) => {
-    console.log("✅ Call accepted by:", socket.userId, "from:", fromUserId);
+    // console.log("✅ Call accepted by:", socket.userId, "from:", fromUserId);
     const fromSocketId = userSocketMap[fromUserId];
 
     if (userCallState[socket.userId] !== "ringing" || userCallState[fromUserId] !== "ringing") {
-      console.log("🚫 Invalid call state for accept:", socket.userId, fromUserId);
+      // console.log("🚫 Invalid call state for accept:", socket.userId, fromUserId);
       return socket.emit("call:unavailable", { reason: "invalid" });
     }
 
@@ -102,7 +102,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("call:decline", ({ fromUserId }) => {
-    console.log("❌ Call declined by:", socket.userId, "from:", fromUserId);
+    // console.log("❌ Call declined by:", socket.userId, "from:", fromUserId);
     const fromSocketId = userSocketMap[fromUserId];
 
     userCallState[socket.userId] = "idle";
@@ -114,7 +114,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("call:end", ({ toUserId }) => {
-    console.log("📴 Call ended by:", socket.userId, "to:", toUserId);
+    // console.log("📴 Call ended by:", socket.userId, "to:", toUserId);
     const toSocketId = userSocketMap[toUserId];
 
     userCallState[socket.userId] = "idle";
@@ -129,7 +129,7 @@ io.on("connection", (socket) => {
   socket.on("webrtc:offer", ({ toUserId, offer }) => {
     const toSocketId = userSocketMap[toUserId];
     if (toSocketId) {
-      console.log("📡 Relaying WebRTC offer from:", socket.userId, "to:", toUserId);
+      // console.log("📡 Relaying WebRTC offer from:", socket.userId, "to:", toUserId);
       io.to(toSocketId).emit("webrtc:offer", { fromUserId: socket.userId, offer });
     }
   });
@@ -137,7 +137,7 @@ io.on("connection", (socket) => {
   socket.on("webrtc:answer", ({ toUserId, answer }) => {
     const toSocketId = userSocketMap[toUserId];
     if (toSocketId) {
-      console.log("📡 Relaying WebRTC answer from:", socket.userId, "to:", toUserId);
+      // console.log("📡 Relaying WebRTC answer from:", socket.userId, "to:", toUserId);
       io.to(toSocketId).emit("webrtc:answer", { fromUserId: socket.userId, answer });
     }
   });
@@ -145,7 +145,7 @@ io.on("connection", (socket) => {
   socket.on("webrtc:ice-candidate", ({ toUserId, candidate }) => {
     const toSocketId = userSocketMap[toUserId];
     if (toSocketId) {
-      console.log("📡 Relaying ICE candidate from:", socket.userId, "to:", toUserId);
+      // console.log("📡 Relaying ICE candidate from:", socket.userId, "to:", toUserId);
       io.to(toSocketId).emit("webrtc:ice-candidate", { fromUserId: socket.userId, candidate });
     }
   });
@@ -155,7 +155,7 @@ io.on("connection", (socket) => {
     if (!socket.userId) return;
 
     const userId = socket.userId;
-    console.log("🔌 User disconnected:", userId, "socket:", socket.id);
+    // console.log("🔌 User disconnected:", userId, "socket:", socket.id);
     delete userSocketMap[userId];
 
     if (userCallState[userId] === "in-call" || userCallState[userId] === "ringing") {
@@ -165,7 +165,7 @@ io.on("connection", (socket) => {
           userCallState[otherUserId] === "ringing"
         ) {
           const otherSocketId = userSocketMap[otherUserId];
-          console.log("📴 Notifying call end to:", otherUserId, "due to disconnect");
+          // console.log("📴 Notifying call end to:", otherUserId, "due to disconnect");
           io.to(otherSocketId).emit("call:ended", { byUserId: userId, reason: "disconnected" });
           userCallState[otherUserId] = "idle";
         }
@@ -173,7 +173,7 @@ io.on("connection", (socket) => {
     }
 
     delete userCallState[userId];
-    console.log("👥 Updated userSocketMap after disconnect:", Object.keys(userSocketMap));
+    // console.log("👥 Updated userSocketMap after disconnect:", Object.keys(userSocketMap));
     io.emit("onlineUsers", Object.keys(userSocketMap));
   });
 });

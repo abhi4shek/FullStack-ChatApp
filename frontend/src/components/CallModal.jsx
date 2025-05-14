@@ -23,6 +23,7 @@ const CallModal = () => {
     webrtcAnswer,
     webrtcIceCandidate,
     acceptCall,
+    role,
     rejectCall,
     endCall,
     sendWebRTCOffer,
@@ -56,8 +57,12 @@ const CallModal = () => {
     try {
       peerConnectionRef.current = new RTCPeerConnection({
         iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          { urls: "stun:stun1.l.google.com:19302" },
+          {
+            urls: [
+              "stun:stun.l.google.com:19302",
+              "stun:stun1.l.google.com:19302",
+            ],
+          },
           {
             urls: "turn:openrelay.metered.ca:80",
             username: "openrelayproject",
@@ -92,7 +97,7 @@ const CallModal = () => {
           const remoteAudio = new Audio();
           remoteAudio.srcObject = event.streams[0];
           remoteAudio.play().catch((e) => {
-            console.error("Failed to play remote audio:", e);
+            // console.error("Failed to play remote audio:", e);
             toast.error("Failed to play remote audio");
           });
         }
@@ -102,27 +107,27 @@ const CallModal = () => {
       const stream = await navigator.mediaDevices
         .getUserMedia(constraints)
         .catch((e) => {
-          console.error("Failed to access media:", e);
+          // console.error("Failed to access media:", e);
           toast.error("Failed to access camera or microphone");
           endCall();
           throw e;
         });
       localStreamRef.current = stream;
-      console.log("🎤 Local stream acquired:", stream.getTracks());
+      // console.log("🎤 Local stream acquired:", stream.getTracks());
       if (localVideoRef.current && callType === "video") {
         localVideoRef.current.srcObject = stream;
       }
       stream.getTracks().forEach((track) => {
-        console.log("➕ Adding track to peer connection:", track);
+        // console.log("➕ Adding track to peer connection:", track);
         peerConnectionRef.current.addTrack(track, stream);
         track.enabled = track.kind === "audio" ? !isMuted : !isCameraOff;
       });
-
-      if (isCalling) {
+      // console.log("📡 Peer connection initialized:", peerConnectionRef.current);
+      if (role === "caller") {
         const offer = await peerConnectionRef.current.createOffer();
         await peerConnectionRef.current.setLocalDescription(offer);
         if (receiver?._id) {
-          console.log("📡 Sending WebRTC offer to:", receiver._id, offer);
+          // console.log("📡 Sending WebRTC offer to:", receiver._id, offer);
           sendWebRTCOffer(receiver._id, offer);
         }
       }
@@ -134,7 +139,7 @@ const CallModal = () => {
         testAudio.play().catch((e) => console.error("Test audio failed:", e));
       }
     } catch (error) {
-      console.error("WebRTC initialization failed:", error);
+      // console.error("WebRTC initialization failed:", error);
       toast.error("Failed to start call");
       endCall();
     }
@@ -199,12 +204,12 @@ const CallModal = () => {
       width: size.width,
       height: size.height,
     };
-    console.log(
-      "📏 Started resizing modal at:",
-      { x: e.clientX, y: e.clientY },
-      "handle:",
-      handle
-    );
+    // console.log(
+    //   "📏 Started resizing modal at:",
+    //   { x: e.clientX, y: e.clientY },
+    //   "handle:",
+    //   handle
+    // );
   };
 
   const onResize = (e) => {
@@ -257,12 +262,12 @@ const CallModal = () => {
 
       setSize({ width: newWidth, height: newHeight });
       setPosition({ x: newX, y: newY });
-      console.log("📏 Resizing modal to:", {
-        width: newWidth,
-        height: newHeight,
-        x: newX,
-        y: newY,
-      });
+      // console.log("📏 Resizing modal to:", {
+      //   width: newWidth,
+      //   height: newHeight,
+      //   x: newX,
+      //   y: newY,
+      // });
     }
   };
 
@@ -295,58 +300,58 @@ const CallModal = () => {
 
   useEffect(() => {
     const unsubscribe = useCallStore.subscribe((state, prevState) => {
-      console.log("🔄 CallStore state changed:", {
-        isReceivingCall: state.isReceivingCall,
-        isCalling: state.isCalling,
-        isInCall: state.isInCall,
-        caller: state.caller,
-        receiver: state.receiver,
-        reason: state.reason,
-      });
+      // console.log("🔄 CallStore state changed:", {
+      //   isReceivingCall: state.isReceivingCall,
+      //   isCalling: state.isCalling,
+      //   isInCall: state.isInCall,
+      //   caller: state.caller,
+      //   receiver: state.receiver,
+      //   reason: state.reason,
+      // });
     });
     return () => {
       unsubscribe();
     };
   }, []);
 
-  useEffect(() => {
-    console.log("🎨 CallModal rendering attempt:", {
-      showModal,
-      isReceivingCall,
-      isCalling,
-      isInCall,
-      caller,
-      receiver,
-      callType,
-      position,
-      size,
-    });
-    if (isReceivingCall && !showModal) {
-      console.warn("⚠️ isReceivingCall is true but showModal is false");
-    }
-    if (modalRef.current && showModal) {
-      const styles = window.getComputedStyle(modalRef.current);
-      console.log("🖼️ Modal DOM styles:", {
-        display: styles.display,
-        top: styles.top,
-        left: styles.left,
-        width: styles.width,
-        height: styles.height,
-        zIndex: styles.zIndex,
-        opacity: styles.opacity,
-      });
-    }
-  }, [
-    showModal,
-    isReceivingCall,
-    isCalling,
-    isInCall,
-    caller,
-    receiver,
-    callType,
-    position,
-    size,
-  ]);
+  // useEffect(() => {
+  //   console.log("🎨 CallModal rendering attempt:", {
+  //     showModal,
+  //     isReceivingCall,
+  //     isCalling,
+  //     isInCall,
+  //     caller,
+  //     receiver,
+  //     callType,
+  //     position,
+  //     size,
+  //   });
+  //   if (isReceivingCall && !showModal) {
+  //     console.warn("⚠️ isReceivingCall is true but showModal is false");
+  //   }
+  //   if (modalRef.current && showModal) {
+  //     const styles = window.getComputedStyle(modalRef.current);
+  //     console.log("🖼️ Modal DOM styles:", {
+  //       display: styles.display,
+  //       top: styles.top,
+  //       left: styles.left,
+  //       width: styles.width,
+  //       height: styles.height,
+  //       zIndex: styles.zIndex,
+  //       opacity: styles.opacity,
+  //     });
+  //   }
+  // }, [
+  //   showModal,
+  //   isReceivingCall,
+  //   isCalling,
+  //   isInCall,
+  //   caller,
+  //   receiver,
+  //   callType,
+  //   position,
+  //   size,
+  // ]);
 
   // Ringtone Handling
   useEffect(() => {
@@ -380,10 +385,15 @@ const CallModal = () => {
 
   // WebRTC Setup
   useEffect(() => {
-    if (isInCall && !peerConnectionRef.current) {
+    // console.log("🧩 isInCall changed:", isInCall);
+    // console.log("📡 peerConnectionRef BEFORE init:", peerConnectionRef.current);
+
+    if (isInCall) {
+      cleanupWebRTC(); // 🔁 Ensure fresh setup
       initializeWebRTC();
+    } else {
+      cleanupWebRTC();
     }
-    return () => cleanupWebRTC();
   }, [isInCall]);
 
   // WebRTC Signaling
@@ -467,14 +477,6 @@ const CallModal = () => {
       setIsCameraOff(!isCameraOff);
     }
   };
-
-  if (!showModal) {
-    return (
-      <div style={{ display: "none" }}>
-        CallModal hidden (isReceivingCall: {isReceivingCall.toString()})
-      </div>
-    );
-  }
 
   const formatTime = (seconds) =>
     `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(
